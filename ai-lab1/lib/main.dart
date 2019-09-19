@@ -1,7 +1,8 @@
-import 'package:ai_lab1/model/DFS.dart';
-import 'package:ai_lab1/model/field.dart' as field;
+import 'package:ai_lab1/appbar.dart';
+import 'package:ai_lab1/model/solver.dart';
 import 'package:ai_lab1/tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 
 void main() => runApp(App());
 
@@ -23,42 +24,76 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DFS _dfs = DFS();
-
+  bool _isChanged = false;
+  Solver _solver = Solver();
+  
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Метод слепого поиска')
-      ),
-      body: GridView.builder(
-        itemCount: _dfs.field.getState().length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-        itemBuilder: (BuildContext context, int index) {
-          return CustomGridTile(_dfs.field.getState()[index]);
-        }
-      ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
+      appBar: CustomAppBar(_isChanged),
+      body: Stack(
         children: <Widget>[
-          FloatingActionButton(
-            child: Icon(Icons.accessible_forward),
-            onPressed: () {
-              setState(() {
-                _dfs.solveBFS();
-              });
-            }
-          ),
-          FloatingActionButton(
-            child: Icon(Icons.refresh),
-            onPressed: () {
-              setState(() {
-                _dfs.field.setState(['6', '2', '8', '4', '1', '7', '5', '3', '']);
-              });
+          GridView.builder(
+            itemCount: _solver.field.getState().length,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
+            itemBuilder: (BuildContext context, int index) {
+              return CustomGridTile(_solver.field.getState()[index]);
             }
           )
         ],
-      )
+      ),
+      floatingActionButton: SpeedDial(
+        animatedIcon: AnimatedIcons.menu_close,
+        overlayOpacity: 0,
+        children: [
+          SpeedDialChild(
+            label: 'Полное решение',
+            child: Icon(Icons.accessible_forward),
+            onTap: () {
+              setState(() {
+                bool solve;
+                if (_isChanged) {
+                  solve = _solver.solveBFS();
+                } else {
+                  solve = _solver.solveDLS();
+                }
+                if (solve) {
+                  CustomGridTile.tileColor = CustomGridTile.END;
+                  showModalBottomSheet(
+                    context: context,
+                    builder: (buildContext) {
+                      return GestureDetector(
+                        onTap: () => Navigator.of(context).pop(),
+                        child: Row(
+                          children: <Widget>[
+                            Icon(Icons.check),
+                            Text(
+                              'Успех',
+                              style: TextStyle(
+                                fontSize: 20.0
+                              ),
+                            )
+                          ]
+                        )
+                      );
+                    },
+                  );
+                }
+              });
+            }
+          ),
+          SpeedDialChild(
+            label: 'Заново',
+            child: Icon(Icons.refresh),
+            onTap: () {
+              setState(() {
+                CustomGridTile.tileColor = CustomGridTile.BEGIN;
+                _solver.field.initState();
+              });
+            }
+          )
+        ]
+      ),
     );
   }
 }
