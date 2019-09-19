@@ -1,6 +1,4 @@
-import 'package:ai_lab1/model/node.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 
 enum Action {
   Right, Left, Up, Down
@@ -8,29 +6,38 @@ enum Action {
 
 class Field {
 
-  /* Варианта перемещение по полю */
+  /* Варианта перемещения по полю */
 
-  final RIGHT = 1;
-  final LEFT = -1;
-  final UP = -3;
-  final DOWN = 3;
+  final _RIGHT = 1;
+  final _LEFT = -1;
+  final _UP = -3;
+  final _DOWN = 3;
 
   /*Начальное и конечное состояние */
 
   List<String> _state;
-  //List<String> _state = ['1', '2', '3', '4', '8', '0', '5', '6', ''];
-  List<String> _endState = ['', '1', '2', '3', '4', '5', '6', '7', '8'];
-
+  final List<String> _endState = ['1', '2', '3', '4', '5', '6', '7', '8', ''];
+  int _depth;
   /*
     Переход в новое состояние: головоломка релизована в виде одномерного массива,
     поэтому передвижение фишек осуществляется след. образом:
     Left: -1 по индексу в массиве;
     Right: +1 по индексу в массиве;
-    Down: +state.length по индексу в массиве;
-    Up: -state.length по индексу в массиве;
+    Down: +3 по индексу в массиве (размерность матрицы);
+    Up: -3 по индексу в массиве;
    */
 
   Field(this._state);
+
+  Field.initState() {
+    _state = ['8', '7', '3', '1', '5', '6', '4', '2', ''];
+    _depth = 0;
+  }
+
+  void initState() {
+    _state = ['8', '7', '3', '1', '5', '6', '4', '2', ''];
+    _depth = 0;
+  }
 
   List<String> toNewState(Action action) {
 
@@ -48,16 +55,16 @@ class Field {
     int swap = 0;
     switch (action) {
       case Action.Right:
-        swap = index + 1;
+        swap = index + _RIGHT;
         break;
       case Action.Left:
-        swap = index - 1;
+        swap = index + _LEFT;
         break;
       case Action.Up:
-        swap = index - 3;
+        swap = index + _UP;
         break;
       case Action.Down:
-        swap = index + 3;
+        swap = index + _DOWN;
         break;
       default:
     }
@@ -129,9 +136,7 @@ class Field {
     return const ListEquality().equals(state, _endState);
   }
 
-  List<String> getState() {
-    return _state;
-  }
+  List<String> getState() => _state;
 
   setState(List<String> state) => _state = state;
 
@@ -140,6 +145,10 @@ class Field {
     list.addAll(_state);
     return list;
   }
+
+  setDepth(int depth) => _depth = depth;
+
+  int getDepth() => _depth;
 
   @override
   String toString() {
