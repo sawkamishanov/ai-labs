@@ -6,7 +6,7 @@ enum Action {
 
 class Field {
 
-  /* Варианта перемещения по полю */
+  /* Варианты перемещения по полю */
 
   final _RIGHT = 1;
   final _LEFT = -1;
@@ -102,16 +102,16 @@ class Field {
     int swap = 0;
     switch (action) {
       case Action.Right:
-        swap = index + 1;
+        swap = index + _RIGHT;
         break;
       case Action.Left:
-        swap = index - 1;
+        swap = index + _LEFT;
         break;
       case Action.Up:
-        swap = index - 3;
+        swap = index + _UP;
         break;
       case Action.Down:
-        swap = index + 3;
+        swap = index + _DOWN;
         break;
       default:
     }

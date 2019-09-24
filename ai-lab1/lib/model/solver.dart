@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'package:ai_lab1/model/field.dart';
+import 'package:ai_lab1/tile.dart';
 
 class Solver {
   Field field = Field.initState();
@@ -16,7 +17,6 @@ class Solver {
     visited[field.toString()] = true;
     while (queue.isNotEmpty) {
       Field temp = queue.removeFirst();
-      print(temp);
       if (temp.isEnd(temp.getState())) {
         field.setState(temp.getState());
         return true;
@@ -39,51 +39,28 @@ class Solver {
     Поиск с ограничением глубины
    */
 
-
-  // bool solveDLS() {
-    
-  //   print(field.getDepth());
-  //   if (field.getDepth() < _limit) {
-  //     visitedDLS[field.toString()] = true;
-  //     if (field.isEnd(field.getState())) {
-  //       return true;
-  //     }
-  //     for (int i = 0; i < Action.values.length; ++i) {
-  //       if (field.checkNewState(Action.values[i])) {
-  //         field.setDepth(field.getDepth() + 1);
-  //         field.toNewState(Action.values[i]);
-  //         if (visitedDLS[field.toString()] == false || visitedDLS[field.toString()] == null) {
-  //           visitedDLS[field.toString()] = true;
-  //           if (solveDLS()) {
-  //             return true;
-  //           }
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
-
-  bool solveDLS() {
+  bool solveDLS(int limit) {
     Map<String, bool> visited = Map<String, bool>();
     Queue<Field> stack = Queue<Field>();
-    int limit = 300000;
 
     stack.addLast(field);
     visited[field.toString()] = true;
     while (stack.isNotEmpty) {
       Field temp = stack.removeLast();
-      if (temp.isEnd(temp.getState())) {
-        field.setState(temp.getState());
-        return true;
-      }
-      for (int i = 0; i < Action.values.length; ++i) {
-        if (temp.checkNewState(Action.values[i])) {
-          Field child = Field(temp.getRealState());
-          child.toNewState(Action.values[i]);
-          if (visited[child.toString()] == false || visited[child.toString()] == null) {
-            stack.addLast(child);
-            visited[child.toString()] = true;
+      if (temp.getDepth() < limit) {
+        if (temp.isEnd(temp.getState())) {
+          field.setState(temp.getState());
+          return true;
+        }
+        for (int i = 0; i < Action.values.length; ++i) {
+          if (temp.checkNewState(Action.values[i])) {
+            Field child = Field(temp.getRealState());
+            child.toNewState(Action.values[i]);
+            if (visited[child.toString()] == false || visited[child.toString()] == null) {
+              stack.addLast(child);
+              child.setDepth(temp.getDepth() + 1);
+              visited[child.toString()] = true;
+            }
           }
         }
       }
@@ -91,27 +68,18 @@ class Solver {
     return false;
   }
 
-  // bool recursiveDLS(Field temp, Map<String, bool> visited, int limit) {
-  //   if (temp.isEnd(temp.getState())) {
-  //       field.setState(temp.getState());
-  //       return true;
-  //   }
-  //   if (limit == 0) {
-  //     return false;
-  //   }
-  //   visited[temp.toString()] = true;
-  //   print(temp.getState());
-  //   for (int i = 0; i < Action.values.length; ++i) {
-  //     if (temp.checkNewState(Action.values[i])) {
-  //       Field child = Field(temp.getRealState());
-  //       child.toNewState(Action.values[i]);
-  //       if (visited[child.toString()] == false || visited[child.toString()] == null) {
-  //         if (recursiveDLS(child, visited, limit - 1)) {
-  //           return true;
-  //         }
-  //       }
-  //     }
-  //   }
-  //   return false;
-  // }
+  /*
+    Поиск с итеративным углублением
+   */
+
+  bool solveDFID() {
+    bool check = false;
+    for (int i = 0; !check; ++i) {
+      check = solveDLS(i);
+      if (check) {
+        return true;
+      }
+    }
+    return false;
+  }
 }
