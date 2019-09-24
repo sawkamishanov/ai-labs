@@ -1,4 +1,5 @@
 import 'package:ai_lab1/appbar.dart';
+import 'package:ai_lab1/details.dart';
 import 'package:ai_lab1/model/solver.dart';
 import 'package:ai_lab1/tile.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,11 @@ class App extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.deepPurple
       ),
-      home: HomePage(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => HomePage(),
+        '/details': (context) => DetailsPage()
+      }
     );
   }
 }
@@ -24,13 +29,19 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _isChanged = false;
+  bool _isChanged = true;
   Solver _solver = Solver();
-  
+
+  callback(bool isChanged) {
+    setState(() {
+      _isChanged = isChanged;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(_isChanged),
+      appBar: CustomAppBar(callback, _isChanged),
       body: Stack(
         children: <Widget>[
           GridView.builder(
@@ -39,13 +50,28 @@ class _HomePageState extends State<HomePage> {
             itemBuilder: (BuildContext context, int index) {
               return CustomGridTile(_solver.field.getState()[index]);
             }
-          )
+          ),
+          GestureDetector(
+            onTap: () {
+              Navigator.pushNamed(context, '/details');
+            }
+          ),
         ],
       ),
       floatingActionButton: SpeedDial(
         animatedIcon: AnimatedIcons.menu_close,
         overlayOpacity: 0,
         children: [
+          SpeedDialChild(
+            label: 'Заново',
+            child: Icon(Icons.refresh),
+            onTap: () {
+              setState(() {
+                CustomGridTile.tileColor = CustomGridTile.BEGIN;
+                _solver.field.initState();
+              });
+            }
+          ),
           SpeedDialChild(
             label: 'Полное решение',
             child: Icon(Icons.accessible_forward),
@@ -55,7 +81,7 @@ class _HomePageState extends State<HomePage> {
                 if (_isChanged) {
                   solve = _solver.solveBFS();
                 } else {
-                  solve = _solver.solveDLS();
+                  solve = _solver.solveDFID();
                 }
                 if (solve) {
                   CustomGridTile.tileColor = CustomGridTile.END;
@@ -83,14 +109,9 @@ class _HomePageState extends State<HomePage> {
             }
           ),
           SpeedDialChild(
-            label: 'Заново',
-            child: Icon(Icons.refresh),
-            onTap: () {
-              setState(() {
-                CustomGridTile.tileColor = CustomGridTile.BEGIN;
-                _solver.field.initState();
-              });
-            }
+            label: 'Пошагово',
+            child: Icon(Icons.accessible),
+            onTap: null
           )
         ]
       ),
