@@ -1,14 +1,45 @@
 
+import 'package:ai_lab1/model/details.dart';
 import 'package:flutter/material.dart';
 
 class DetailsPage extends StatelessWidget {
+  final Details _details;
+
+  DetailsPage(this._details);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('Подробности'),
       ),
-      body: Container(
+      body: Column(
+        children: <Widget>[
+          Text(
+            'Глубина: ${_details.depth}',
+            style: TextStyle(
+              fontSize: 25.0
+            ),
+          ),
+          Text(
+            'Пройдено узлов: ${_details.countNodes}',
+            style: TextStyle(
+              fontSize: 25.0
+            ),
+          ),
+          Text(
+            'Время выполнения: ${_details.time} мс',
+            style: TextStyle(
+              fontSize: 25.0
+            ),
+          ),
+          Text(
+            'Память: ${_details.memory} МБ',
+            style: TextStyle(
+              fontSize: 25.0
+            ),
+          ),
+        ],
       )
     );
   }
