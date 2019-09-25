@@ -76,6 +76,7 @@ class _HomePageState extends State<HomePage> {
                 _solver.field.initState();
                 _solver.initSolver();
                 _stopwatch.reset();
+                _details.initDetails();
               });
             }
           ),
