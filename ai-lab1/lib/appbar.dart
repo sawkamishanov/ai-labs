@@ -28,7 +28,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 if (value) {
                   _title = 'Поиск в ширину';
                 } else {
-                  _title = 'Поиск с ограничением глубины';
+                  _title = 'С итеративным углублением';
                 }
               });
             }
