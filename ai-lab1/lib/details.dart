@@ -14,31 +14,41 @@ class DetailsPage extends StatelessWidget {
         title: Text('Подробности'),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          Text(
-            'Глубина: ${_details.depth}',
-            style: TextStyle(
-              fontSize: 25.0
+          Card(
+            child: Text(
+              'Глубина: ${_details.depth}',
+              style: TextStyle(
+                fontSize: 30.0
+              ),
             ),
           ),
-          Text(
-            'Пройдено узлов: ${_details.countNodes}',
-            style: TextStyle(
-              fontSize: 25.0
+          Card(
+            child: Text(
+              'Пройдено узлов: ${_details.countNodes}',
+              style: TextStyle(
+                fontSize: 30.0
+              ),
             ),
           ),
-          Text(
-            'Время выполнения: ${_details.time} мс',
-            style: TextStyle(
-              fontSize: 25.0
+          Card(
+            child: Text(
+              'Время выполнения: ${_details.time}',
+              style: TextStyle(
+                fontSize: 30.0
+              ),
             ),
           ),
-          Text(
-            'Память: ${_details.memory} МБ',
-            style: TextStyle(
-              fontSize: 25.0
+          Card(
+            child: Text(
+              'Память: ${_details.memory != null ? _details.memory.toStringAsFixed(2): null } МБ',
+              style: TextStyle(
+                fontSize: 30.0
+              ),
             ),
-          ),
+          )
         ],
       )
     );

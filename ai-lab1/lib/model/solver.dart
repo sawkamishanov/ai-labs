@@ -79,6 +79,7 @@ class Solver {
           child.toNewState(Action.values[i]);
           if (visitedBFS[child.toString()] == false || visitedBFS[child.toString()] == null) {
             queueBFS.add(child);
+            child.setDepth(temp.getDepth() + 1);
             visitedBFS[child.toString()] = true;
           }
         }
